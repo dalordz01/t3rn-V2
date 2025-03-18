@@ -5,3 +5,4 @@ chmod +x sant3rn.sh
 ./sant3rn.sh
 
 ```
+input Your Vps username please use default is root and your private key
