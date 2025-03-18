@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Menampilkan ASCII Art untuk "Saandy"
+echo "
+  ██████ ▄▄▄     ▄▄▄      ███▄    █▓█████▓██   ██▓
+▒██    ▒▒████▄  ▒████▄    ██ ▀█   █▒██▀ ██▒██  ██▒
+░ ▓██▄  ▒██  ▀█▄▒██  ▀█▄ ▓██  ▀█ ██░██   █▌▒██ ██░
+  ▒   ██░██▄▄▄▄█░██▄▄▄▄██▓██▒  ▐▌██░▓█▄   ▌░ ▐██▓░
+▒██████▒▒▓█   ▓██▓█   ▓██▒██░   ▓██░▒████▓ ░ ██▒▓░
+▒ ▒▓▒ ▒ ░▒▒   ▓▒█▒▒   ▓▒█░ ▒░   ▒ ▒ ▒▒▓  ▒  ██▒▒▒ 
+░ ░▒  ░ ░ ▒   ▒▒ ░▒   ▒▒ ░ ░░   ░ ▒░░ ▒  ▒▓██ ░▒░ 
+░  ░  ░   ░   ▒   ░   ▒     ░   ░ ░ ░ ░  ░▒ ▒ ░░  
+      ░       ░  ░    ░  ░        ░   ░   ░ ░     
+                                    ░     ░ ░     
+"
+
 # Prompt untuk user (default: root)
 read -p "Masukkan nama user untuk menjalankan executor (default: root): " EXECUTOR_USER
 EXECUTOR_USER=${EXECUTOR_USER:-root}
@@ -65,5 +79,6 @@ sudo systemctl daemon-reload
 sudo systemctl enable t3rn-executor.service
 sudo systemctl start t3rn-executor.service
 
-# Tampilkan status
-sudo systemctl status t3rn-executor.service --no-pager
+# Tampilkan log secara real-time
+echo "✅ Executor berhasil diinstall dan dijalankan! Menampilkan log real-time..."
+sudo journalctl -u t3rn-executor.service -f --no-hostname -o cat
