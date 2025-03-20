@@ -48,12 +48,11 @@ ENV_FILE="/etc/t3rn-executor.env"
 mkdir -p "$INSTALL_DIR" && cd "$INSTALL_DIR"
 
 # Unduh versi terbaru dari executor
-TAG=$(curl -s https://api.github.com/repos/t3rn/executor-release/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
-wget "https://github.com/t3rn/executor-release/releases/download/$TAG/executor-linux-$TAG.tar.gz"
+wget "https://github.com/t3rn/executor-release/releases/download/v0.56.0/executor-linux-v0.56.0.tar.gz"
 
 # Ekstrak file
-tar -xzf executor-linux-*.tar.gz
-cd executor/executor/bin
+tar -xzf executor-linux-v0.56.0.tar.gz
+cd executor/bin
 
 # Konfigurasi environment file
 sudo bash -c "cat > $ENV_FILE" <<EOL
@@ -72,8 +71,8 @@ After=network.target
 
 [Service]
 User=$EXECUTOR_USER
-WorkingDirectory=$INSTALL_DIR/executor/executor/bin
-ExecStart=$INSTALL_DIR/executor/executor/bin/executor
+WorkingDirectory=$INSTALL_DIR/executor/bin
+ExecStart=$INSTALL_DIR/executor/bin/executor
 Restart=always
 RestartSec=10
 Environment=ENVIRONMENT=testnet
@@ -86,9 +85,8 @@ Environment=EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=false
 Environment=EXECUTOR_PROCESS_ORDERS_API_ENABLED=false
 Environment=EXECUTOR_MAX_L3_GAS_PRICE=$GAS_PRICE
 Environment=PRIVATE_KEY_LOCAL=$PRIVATE_KEY_LOCAL
-Environment=ENABLED_NETWORKS=l2rn,arbitrum-sepolia,base-sepolia,blast-sepolia,optimism-sepolia,unichain-sepolia
+Environment=ENABLED_NETWORKS=arbitrum-sepolia,base-sepolia,optimism-sepolia,l2rn
 EnvironmentFile=$ENV_FILE
-Environment=EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=true
 
 [Install]
 WantedBy=multi-user.target
@@ -100,5 +98,5 @@ sudo systemctl enable t3rn-executor.service
 sudo systemctl start t3rn-executor.service
 
 # Tampilkan log secara real-time
-echo "✅ Executor berhasil diinstall dan Menampilkan log real-time.."
+echo "✅ Executor berhasil diinstall dan siap dikewer-kewer! Menampilkan log real-time.."
 sudo journalctl -u t3rn-executor.service -f --no-hostname -o cat
