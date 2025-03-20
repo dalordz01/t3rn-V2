@@ -1,6 +1,16 @@
 #!/bin/bash
 
-# Menampilkan ASCII Art untuk "Saandy"
+# Menghentikan dan menghapus service lama
+sudo systemctl stop t3rn-executor.service
+sudo systemctl disable t3rn-executor.service
+sudo systemctl daemon-reload
+
+# Menghapus file lama
+rm -rf /home/$EXECUTOR_USER/t3rn
+rm -rf /etc/systemd/system/t3rn-executor.service
+rm -rf /etc/t3rn-executor.env
+
+# Menampilkan ASCII Art
 echo "
   ██████ ▄▄▄     ▄▄▄      ███▄    █▓█████▓██   ██▓
 ▒██    ▒▒████▄  ▒████▄    ██ ▀█   █▒██▀ ██▒██  ██▒
@@ -23,13 +33,11 @@ read -sp "Masukkan PRIVATE_KEY_LOCAL: " PRIVATE_KEY_LOCAL
 echo ""
 
 # Prompt Alchemy API
-echo -n "API Key Alchemy: "
-read APIKEY_ALCHEMY
+read -p "API Key Alchemy: " APIKEY_ALCHEMY
 echo
 
 # Prompt Gas Price
-echo -n "Gas Price: "
-read GAS_PRICE
+read -p "Gas Price: " GAS_PRICE
 echo
 
 INSTALL_DIR="/home/$EXECUTOR_USER/t3rn"
@@ -43,11 +51,9 @@ mkdir -p "$INSTALL_DIR" && cd "$INSTALL_DIR"
 TAG=$(curl -s https://api.github.com/repos/t3rn/executor-release/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
 wget "https://github.com/t3rn/executor-release/releases/download/$TAG/executor-linux-$TAG.tar.gz"
 
-
 # Ekstrak file
 tar -xzf executor-linux-*.tar.gz
 cd executor/executor/bin
-
 
 # Konfigurasi environment file
 sudo bash -c "cat > $ENV_FILE" <<EOL
@@ -94,5 +100,5 @@ sudo systemctl enable t3rn-executor.service
 sudo systemctl start t3rn-executor.service
 
 # Tampilkan log secara real-time
-echo "✅ Executor berhasil diinstall dan siap dikewer-kewer! Menampilkan log real-time.."
+echo "✅ Executor berhasil diinstall dan Menampilkan log real-time.."
 sudo journalctl -u t3rn-executor.service -f --no-hostname -o cat
