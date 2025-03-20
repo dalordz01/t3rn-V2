@@ -52,7 +52,7 @@ wget "https://github.com/t3rn/executor-release/releases/download/v0.56.0/executo
 
 # Ekstrak file
 tar -xzf executor-linux-v0.56.0.tar.gz
-cd executor/bin
+cd executor/executor/bin
 
 # Konfigurasi environment file
 sudo bash -c "cat > $ENV_FILE" <<EOL
@@ -71,8 +71,8 @@ After=network.target
 
 [Service]
 User=$EXECUTOR_USER
-WorkingDirectory=$INSTALL_DIR/executor/bin
-ExecStart=$INSTALL_DIR/executor/bin/executor
+WorkingDirectory=$INSTALL_DIR/executor/executor/bin
+ExecStart=$INSTALL_DIR/executor/executor/bin/executor
 Restart=always
 RestartSec=10
 Environment=ENVIRONMENT=testnet
