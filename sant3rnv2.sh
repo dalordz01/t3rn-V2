@@ -86,7 +86,7 @@ Environment=EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=false
 Environment=EXECUTOR_PROCESS_ORDERS_API_ENABLED=false
 Environment=EXECUTOR_MAX_L3_GAS_PRICE=$GAS_PRICE
 Environment=PRIVATE_KEY_LOCAL=$PRIVATE_KEY_LOCAL
-Environment=ENABLED_NETWORKS=arbitrum-sepolia,base-sepolia,optimism-sepolia,l2rn
+Environment=ENABLED_NETWORKS=l2rn,arbitrum-sepolia,base-sepolia,blast-sepolia,optimism-sepolia,unichain-sepolia
 EnvironmentFile=$ENV_FILE
 Environment=EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=true
 
