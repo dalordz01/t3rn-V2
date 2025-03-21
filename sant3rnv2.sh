@@ -48,10 +48,10 @@ ENV_FILE="/etc/t3rn-executor.env"
 mkdir -p "$INSTALL_DIR" && cd "$INSTALL_DIR"
 
 # Unduh versi terbaru dari executor
-wget "https://github.com/t3rn/executor-release/releases/download/v0.56.0/executor-linux-v0.56.0.tar.gz"
+wget "https://github.com/t3rn/executor-release/releases/download/v0.56.0/executor-linux-v0.53.1.tar.gz"
 
 # Ekstrak file
-tar -xzf executor-linux-v0.56.0.tar.gz
+tar -xzf executor-linux-v0.53.1.tar.gz
 cd executor/executor/bin
 
 # Konfigurasi environment file
