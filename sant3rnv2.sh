@@ -107,5 +107,5 @@ sudo systemctl enable t3rn-executor.service
 sudo systemctl start t3rn-executor.service
 
 # Tampilkan log secara real-time
-echo "✅ Executor berhasil diinstall dan siap dikewer-kewer! Menampilkan log real-time.."
+echo "✅ Executor berhasil diinstall . Menampilkan log real-time.."
 sudo journalctl -u t3rn-executor.service -f --no-hostname -o cat
