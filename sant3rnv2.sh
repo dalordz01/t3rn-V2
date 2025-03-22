@@ -4,10 +4,12 @@
 read -p "Masukkan nama user untuk menjalankan executor (default: root): " EXECUTOR_USER
 EXECUTOR_USER=${EXECUTOR_USER:-root}
 
-# Menghentikan dan menghapus service lama
-sudo systemctl stop t3rn-executor.service
-sudo systemctl disable t3rn-executor.service
-sudo systemctl daemon-reload
+# Menghentikan dan menghapus service lama jika ada
+if systemctl list-units --full -all | grep -q "t3rn-executor.service"; then
+    sudo systemctl stop t3rn-executor.service
+    sudo systemctl disable t3rn-executor.service
+    sudo systemctl daemon-reload
+fi
 
 # Menghapus file lama
 sudo rm -rf /home/$EXECUTOR_USER/t3rn
@@ -15,16 +17,22 @@ sudo rm -rf /etc/systemd/system/t3rn-executor.service
 sudo rm -rf /etc/t3rn-executor.env
 
 # Prompt untuk Private Key
-read -sp "Masukkan PRIVATE_KEY_LOCAL: " PRIVATE_KEY_LOCAL
-echo ""
+while [[ -z "$PRIVATE_KEY_LOCAL" ]]; do
+    read -sp "Masukkan PRIVATE_KEY_LOCAL (tidak boleh kosong): " PRIVATE_KEY_LOCAL
+    echo ""
+done
 
 # Prompt Alchemy API
-read -p "API Key Alchemy: " APIKEY_ALCHEMY
-echo
+while [[ -z "$APIKEY_ALCHEMY" ]]; do
+    read -p "API Key Alchemy (tidak boleh kosong): " APIKEY_ALCHEMY
+    echo
+done
 
 # Prompt Gas Price
-read -p "Gas Price: " GAS_PRICE
-echo
+while [[ -z "$GAS_PRICE" ]]; do
+    read -p "Gas Price (tidak boleh kosong): " GAS_PRICE
+    echo
+done
 
 INSTALL_DIR="/home/$EXECUTOR_USER/t3rn"
 SERVICE_FILE="/etc/systemd/system/t3rn-executor.service"
@@ -36,12 +44,14 @@ EXECUTOR_URL="https://github.com/t3rn/executor-release/releases/download/$EXECUT
 # Pastikan direktori ada
 mkdir -p "$INSTALL_DIR" && cd "$INSTALL_DIR"
 
-# Unduh versi terbaru dari executor
-echo "🔽 Mengunduh Executor dari $EXECUTOR_URL..."
-curl -L -o "$EXECUTOR_FILE" "$EXECUTOR_URL" || {
-    echo "❌ Gagal mengunduh Executor. Periksa koneksi internet dan coba lagi."
+# Cek koneksi sebelum mengunduh
+if curl --output /dev/null --silent --head --fail "$EXECUTOR_URL"; then
+    echo "🔽 Mengunduh Executor dari $EXECUTOR_URL..."
+    curl -L -o "$EXECUTOR_FILE" "$EXECUTOR_URL"
+else
+    echo "❌ URL tidak dapat diakses, pastikan koneksi internet stabil."
     exit 1
-}
+fi
 
 # Ekstrak file
 echo "📦 Mengekstrak Executor..."
@@ -64,10 +74,17 @@ fi
 
 # Konfigurasi environment file
 sudo bash -c "cat > $ENV_FILE" <<EOL
-RPC_ENDPOINTS="{\"l2rn\": [\"https://b2n.rpc.caldera.xyz/http\"], \"arbt\": [\"https://arbitrum-sepolia.drpc.org\", \"https://arb-sepolia.g.alchemy.com/v2/$APIKEY_ALCHEMY\"], \"bast\": [\"https://base-sepolia-rpc.publicnode.com\", \"https://base-sepolia.g.alchemy.com/v2/$APIKEY_ALCHEMY\"], \"blast\": [\"https://blast-sepolia-rpc.publicnode.com\"], \"opst\": [\"https://sepolia.optimism.io\", \"https://opt-sepolia.g.alchemy.com/v2/$APIKEY_ALCHEMY\"], \"unit\": [\"https://unichain-sepolia.g.alchemy.com/v2/$APIKEY_ALCHEMY\", \"https://sepolia.unichain.org\"]}"
+RPC_ENDPOINTS='{
+  "l2rn": ["https://b2n.rpc.caldera.xyz/http"],
+  "arbt": ["https://arbitrum-sepolia.drpc.org", "https://arb-sepolia.g.alchemy.com/v2/$APIKEY_ALCHEMY"],
+  "bast": ["https://base-sepolia-rpc.publicnode.com", "https://base-sepolia.g.alchemy.com/v2/$APIKEY_ALCHEMY"],
+  "blst": ["https://sepolia.blast.io", "https://blast-sepolia.g.alchemy.com/v2/$APIKEY_ALCHEMY"],
+  "opst": ["https://sepolia.optimism.io", "https://opt-sepolia.g.alchemy.com/v2/$APIKEY_ALCHEMY"],
+  "unit": ["https://unichain-sepolia.drpc.org", "https://unichain-sepolia.g.alchemy.com/v2/$APIKEY_ALCHEMY"]
+}'
 EXECUTOR_MAX_L3_GAS_PRICE="$GAS_PRICE"
 PRIVATE_KEY_LOCAL="$PRIVATE_KEY_LOCAL"
-ENABLED_NETWORKS="l2rn,arbitrum-sepolia,base-sepolia,blast-sepolia,optimism-sepolia,unichain-sepolia"
+ENABLED_NETWORKS="l2rn,arbitrum-sepolia,base-sepolia,blst-sepolia,optimism-sepolia,unichain-sepolia"
 EOL
 
 # Berikan hak akses ke user
@@ -95,7 +112,7 @@ Environment=EXECUTOR_PROCESS_CLAIMS_ENABLED=true
 Environment=EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=false
 Environment=EXECUTOR_PROCESS_ORDERS_API_ENABLED=false
 EnvironmentFile=$ENV_FILE
-Environment=ENABLED_NETWORKS=l2rn,arbitrum-sepolia,base-sepolia,blast-sepolia,optimism-sepolia,unichain-sepolia
+Environment=ENABLED_NETWORKS=l2rn,arbitrum-sepolia,base-sepolia,blst-sepolia,optimism-sepolia,unichain-sepolia
 
 [Install]
 WantedBy=multi-user.target
@@ -106,6 +123,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable t3rn-executor.service
 sudo systemctl start t3rn-executor.service
 
-# Tampilkan log secara real-time
-echo "✅ Executor berhasil diinstall . Menampilkan log real-time.."
+# Tampilkan status layanan dan log secara real-time
+echo "✅ Executor berhasil diinstall. Menampilkan status dan log..."
+sudo systemctl status t3rn-executor.service --no-pager
 sudo journalctl -u t3rn-executor.service -f --no-hostname -o cat
