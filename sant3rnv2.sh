@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Menampilkan ASCII Art untuk "Saandy"
+echo "
+  ██████ ▄▄▄     ▄▄▄      ███▄    █▓█████▓██   ██▓
+▒██    ▒▒████▄  ▒████▄    ██ ▀█   █▒██▀ ██▒██  ██▒
+░ ▓██▄  ▒██  ▀█▄▒██  ▀█▄ ▓██  ▀█ ██░██   █▌▒██ ██░
+  ▒   ██░██▄▄▄▄█░██▄▄▄▄██▓██▒  ▐▌██░▓█▄   ▌░ ▐██▓░
+▒██████▒▒▓█   ▓██▓█   ▓██▒██░   ▓██░▒████▓ ░ ██▒▓░
+▒ ▒▓▒ ▒ ░▒▒   ▓▒█▒▒   ▓▒█░ ▒░   ▒ ▒ ▒▒▓  ▒  ██▒▒▒ 
+░ ░▒  ░ ░ ▒   ▒▒ ░▒   ▒▒ ░ ░░   ░ ▒░░ ▒  ▒▓██ ░▒░ 
+░  ░  ░   ░   ▒   ░   ▒     ░   ░ ░ ░ ░  ░▒ ▒ ░░  
+      ░       ░  ░    ░  ░        ░   ░   ░ ░     
+                                    ░     ░ ░     
+"
+
 # Prompt untuk user (default: root)
 read -p "Masukkan nama user untuk menjalankan executor (default: root): " EXECUTOR_USER
 EXECUTOR_USER=${EXECUTOR_USER:-root}
